@@ -23,14 +23,13 @@ resource "aws_ecs_task_definition" "wp_task" {
     ])
 
     volume {
-    name = "wp-storage"
+      name = "wp-storage"
 
-    efs_volume_configuration {
-      file_system_id          = aws_efs_file_system.efs_wp.id
-      root_directory          = "/var/www/html"
-      transit_encryption      = "DISABLED"
-      transit_encryption_port = 2999
+      efs_volume_configuration {
+        file_system_id          = aws_efs_file_system.efs_wp.id
+        root_directory          = "/var/www/html"
+        transit_encryption      = "DISABLED"
+        
+      }
     }
-    }
-
-}
+}     
