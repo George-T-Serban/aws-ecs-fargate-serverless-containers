@@ -4,7 +4,7 @@ resource "aws_ecs_task_definition" "wp_task" {
     network_mode = "awsvpc"
     requires_compatibilities = ["FARGATE"]
 
-    task_role_arn = "arn:aws:iam::648826012845:role/terraform-wordpress-demo-EC2"
+    task_role_arn = "arn:aws:iam::648826012845:role/terraform-wordpress-fargate"
 
     container_definitions = jsonencode([
     {
