@@ -4,7 +4,7 @@ provider "aws" {
   # Configure default tags for all resources deployed
   default_tags {
     tags = {
-      Environment = "Demo"
+      Environment = "Demo-Fargate"
       Service     = "wordpress"
     }
   }
