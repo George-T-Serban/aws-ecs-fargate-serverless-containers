@@ -77,10 +77,8 @@ variable "db_instance_class" {
   default     = "db.t3.small"
 }
 
-# EC2 instances
-variable "instance_type" {
-  description = "EC2 instance type"
-  type        = string
-  default     = "t2.micro"
+variable "db_endpoint" {
+  description = "Aurora writer endpoint"
+  type = string
+  default = "aws_rds_cluster.wp_cluster.endpoint"
 }
-

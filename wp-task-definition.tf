@@ -12,6 +12,13 @@ resource "aws_ecs_task_definition" "wp_task" {
       image     = "wordpress"
       cpu       = 1024
       memory    = 1024
+      "environment": [
+          {"WORDPRESS_DB_HOST": var.db_endpoint,
+           "WORDPRESS_DB_USER": data.aws_ssm_parameter.dbuser.value,
+           "WORDPRESS_DB_PASSWORD": data.aws_ssm_parameter.dbpassword.value,
+           "WORDPRESS_DB_NAME": data.aws_ssm_parameter.dbname.value
+          }
+      ]
       essential = true
       portMappings = [
         {
