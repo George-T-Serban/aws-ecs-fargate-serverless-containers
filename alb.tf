@@ -57,7 +57,7 @@ resource "aws_lb" "wp_alb" {
 resource "aws_lb_target_group" "wp_alb_tg" {
 
   name        = "wp-alb-target-group"
-  target_type = "instance"
+  target_type = "ip"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = module.vpc.vpc_id

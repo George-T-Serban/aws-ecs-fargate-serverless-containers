@@ -83,9 +83,4 @@ variable "instance_type" {
   type        = string
   default     = "t2.micro"
 }
-variable "ec2_keypair" {
-  type    = string
-  default = "keypair here"
-
-}
 
