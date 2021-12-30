@@ -19,4 +19,6 @@ module "vpc" {
   manage_default_route_table = true
   enable_vpn_gateway         = false
 
+  enable_dns_hostnames = true
+  enable_dns_support = true
 }
