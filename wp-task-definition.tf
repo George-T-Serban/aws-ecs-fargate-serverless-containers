@@ -1,42 +1,73 @@
+# Get database credentials from AWS SSM Parameter Store
+# name = "aws ssm parameter name"
+
+# Database password
+data "aws_ssm_parameter" "dbpassword" {
+  name = "DBPassword"
+}
+
+# Database root password
+data "aws_ssm_parameter" "dbrootpassword" {
+  name = "DBRootPassword"
+}
+# Database user name
+data "aws_ssm_parameter" "dbuser" {
+  name = "DBUser"
+}
+
+# Database name
+data "aws_ssm_parameter" "dbname" {
+  name = "DBName"
+}
+
 resource "aws_ecs_task_definition" "wp_task" {
-    family = "wp_task"
+  depends_on = [aws_efs_file_system.efs_wp, aws_efs_mount_target.wp_mnt_target, aws_security_group.ecs_sg]
 
-    network_mode = "awsvpc"
-    requires_compatibilities = ["FARGATE"]
+  family                   = "wordpress"
+  network_mode             = "awsvpc"
+  cpu                      = 1024
+  memory                   = 2048
+  requires_compatibilities = ["FARGATE"]
 
-    task_role_arn = "arn:aws:iam::648826012845:role/terraform-wordpress-fargate"
+  execution_role_arn = "arn:aws:iam::648826012845:role/terraform-wordpress-fargate"
+  task_role_arn      = "arn:aws:iam::648826012845:role/terraform-wordpress-fargate"
 
-    container_definitions = jsonencode([
+  container_definitions = jsonencode([
     {
-      name      = "wordpress_container"
-      image     = "wordpress"
-      cpu       = 1024
-      memory    = 1024
-      "environment": [
-          {"WORDPRESS_DB_HOST": var.db_endpoint,
-           "WORDPRESS_DB_USER": data.aws_ssm_parameter.dbuser.value,
-           "WORDPRESS_DB_PASSWORD": data.aws_ssm_parameter.dbpassword.value,
-           "WORDPRESS_DB_NAME": data.aws_ssm_parameter.dbname.value
-          }
-      ]
-      essential = true
-      portMappings = [
+      "name" : "wordpress",
+      "image" : "wordpress"
+
+      "cpu"       = 1024,
+      "memory"    = 2048,
+      "essential" = true,
+
+      "mountPoints" : [
         {
-          containerPort = 8080
-          hostPort      = 80
+          "containerPath" : "/var/www/html",
+          "sourceVolume" : "efs-wp"
         }
-      ]
-    }
-    ])
+      ],
 
-    volume {
-      name = "wp-storage"
+      "portMappings" : [
+        {
+          "hostPort" : 80,
+          "containerPort" : 80,
+          "protocol" : "tcp"
+        }
+      ],
 
-      efs_volume_configuration {
-        file_system_id          = aws_efs_file_system.efs_wp.id
-        root_directory          = "/var/www/html"
-        transit_encryption      = "DISABLED"
-        
-      }
     }
-}     
+
+  ])
+
+  volume {
+    name = "efs-wp"
+
+    efs_volume_configuration {
+      file_system_id     = aws_efs_file_system.efs_wp.id
+      transit_encryption = "DISABLED"
+    }
+  }
+
+
+}
