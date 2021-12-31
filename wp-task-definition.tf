@@ -1,27 +1,6 @@
-# Get database credentials from AWS SSM Parameter Store
-# name = "aws ssm parameter name"
-
-# Database password
-data "aws_ssm_parameter" "dbpassword" {
-  name = "DBPassword"
-}
-
-# Database root password
-data "aws_ssm_parameter" "dbrootpassword" {
-  name = "DBRootPassword"
-}
-# Database user name
-data "aws_ssm_parameter" "dbuser" {
-  name = "DBUser"
-}
-
-# Database name
-data "aws_ssm_parameter" "dbname" {
-  name = "DBName"
-}
-
 resource "aws_ecs_task_definition" "wp_task" {
-  depends_on = [aws_efs_file_system.efs_wp, aws_efs_mount_target.wp_mnt_target, aws_security_group.ecs_sg]
+
+  depends_on = [aws_rds_cluster.wp_cluster, aws_efs_file_system.efs_wp, aws_efs_mount_target.wp_mnt_target, aws_security_group.ecs_sg]
 
   family                   = "wordpress"
   network_mode             = "awsvpc"
@@ -55,6 +34,13 @@ resource "aws_ecs_task_definition" "wp_task" {
           "protocol" : "tcp"
         }
       ],
+      "environment" : [
+          { "name" : "WORDPRESS_DB_HOST" , "value" : "${aws_rds_cluster.wp_cluster.endpoint}" }, 
+          { "name" : "WORDPRESS_DB_USER" , "value" : "${data.aws_ssm_parameter.dbuser.value}" }, 
+          { "name" : "WORDPRESS_DB_PASSWORD" , "value" : "${data.aws_ssm_parameter.dbpassword.value}" }, 
+          { "name" : "WORDPRESS_DB_NAME" , "value" : "${data.aws_ssm_parameter.dbname.value}" }      
+            
+      ]   
 
     }
 

@@ -3,13 +3,6 @@ resource "aws_security_group" "ecs_sg" {
   description = "Allow traffic from the LB sg to the container and EFS"
   vpc_id      = module.vpc.vpc_id
 
-  ingress {
-    description = "container port"
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   ingress {
     description = "HTTP"
@@ -20,12 +13,20 @@ resource "aws_security_group" "ecs_sg" {
   }
 
   ingress {
-    description = "NFS access within VPC"
+    description = "NFS access"
     from_port   = 2049
     to_port     = 2049
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+   ingress {
+    description = "Database access"
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  } 
 
   egress {
     from_port        = 0
@@ -44,6 +45,7 @@ resource "aws_ecs_service" "wordpress" {
 
   launch_type      = "FARGATE"
   platform_version = "1.4.0"
+  enable_execute_command = true
 
 
   network_configuration {

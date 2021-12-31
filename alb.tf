@@ -65,8 +65,8 @@ resource "aws_lb_target_group" "wp_alb_tg" {
 
   health_check {
     port                = 80
-    path                = "/"
-    interval            = 30
+    path                = "/var/www/html"
+    interval            = 300
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 5
