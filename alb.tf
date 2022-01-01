@@ -51,11 +51,7 @@ resource "aws_lb" "wp_alb" {
 }
 
 # Create the Load Balancer Target Group and Health Checks.
-# Register targets with one or more target groups. 
-# The load balancer starts routing requests to a newly registered target as soon as the registration process completes.
-# It can take a few minutes for the registration process to complete and health checks to start.
 resource "aws_lb_target_group" "wp_alb_tg" {
-
   name        = "wp-alb-target-group"
   target_type = "ip"
   port        = 80

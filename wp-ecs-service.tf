@@ -1,11 +1,11 @@
+# Create the ECS Service and security groups
 resource "aws_security_group" "ecs_sg" {
-  name        = "Open container port 8080"
-  description = "Allow traffic from the LB sg to the container and EFS"
+  name        = "Container and EFS ports"
+  description = "Allow access to containers and EFS"
   vpc_id      = module.vpc.vpc_id
 
-
   ingress {
-    description = "HTTP"
+    description = "Container port"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -13,20 +13,12 @@ resource "aws_security_group" "ecs_sg" {
   }
 
   ingress {
-    description = "NFS access"
+    description = "EFS access"
     from_port   = 2049
     to_port     = 2049
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [module.vpc.vpc_cidr_block]
   }
-
-   ingress {
-    description = "Database access"
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  } 
 
   egress {
     from_port        = 0
@@ -45,13 +37,13 @@ resource "aws_ecs_service" "wordpress" {
 
   launch_type      = "FARGATE"
   platform_version = "1.4.0"
+# Enable execute command so we can connect to container to troubleshoot  
   enable_execute_command = true
-
 
   network_configuration {
     subnets = ["${module.vpc.private_subnets[0]}",
-              "${module.vpc.private_subnets[1]}",
-              "${module.vpc.private_subnets[2]}"
+               "${module.vpc.private_subnets[1]}",
+               "${module.vpc.private_subnets[2]}"
     ]
     security_groups  = [aws_security_group.ecs_sg.id]
     assign_public_ip = true

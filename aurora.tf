@@ -1,12 +1,13 @@
-# Get database credentials from AWS SSM Parameter Store
-# name = "aws ssm parameter name"
-
+# Create the database host ssm parameter
 resource "aws_ssm_parameter" "dbhost" {
   name = "DBHost"
-  description = "aurora cluster endpoint"
+  description = "aurora writer cluster endpoint"
   type = "String"
   value = "${aws_rds_cluster.wp_cluster.endpoint}"
 }
+
+# Get database credentials from AWS SSM Parameter Store
+# name = "aws ssm parameter name"
 
 # Database password
 data "aws_ssm_parameter" "dbpassword" {
@@ -29,8 +30,8 @@ data "aws_ssm_parameter" "dbname" {
 
 # Create database security group
 resource "aws_security_group" "db_sg" {
-  name        = "Database access from within VPC"
-  description = "Database access from within VPC"
+  name        = "Database access from ecs security group within VPC"
+  description = "Database access from ecs security group within VPC"
   vpc_id      = module.vpc.vpc_id
 
   ingress {
@@ -38,7 +39,7 @@ resource "aws_security_group" "db_sg" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [module.vpc.vpc_cidr_block]
     security_groups  = [aws_security_group.ecs_sg.id]
 
   }

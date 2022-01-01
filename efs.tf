@@ -29,7 +29,7 @@ resource "aws_efs_file_system" "efs_wp" {
   encrypted        = false
 
   tags = {
-    Name = "wp-storage"
+    Name = "wordpress-storage"
   }
 }
 

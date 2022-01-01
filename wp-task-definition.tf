@@ -39,7 +39,6 @@ resource "aws_ecs_task_definition" "wp_task" {
           { "name" : "WORDPRESS_DB_USER" , "value" : "${data.aws_ssm_parameter.dbuser.value}" }, 
           { "name" : "WORDPRESS_DB_PASSWORD" , "value" : "${data.aws_ssm_parameter.dbpassword.value}" }, 
           { "name" : "WORDPRESS_DB_NAME" , "value" : "${data.aws_ssm_parameter.dbname.value}" }      
-            
       ]   
 
     }
@@ -51,9 +50,8 @@ resource "aws_ecs_task_definition" "wp_task" {
 
     efs_volume_configuration {
       file_system_id     = aws_efs_file_system.efs_wp.id
-      transit_encryption = "DISABLED"
+      transit_encryption = "ENABLED"
     }
   }
-
 
 }
