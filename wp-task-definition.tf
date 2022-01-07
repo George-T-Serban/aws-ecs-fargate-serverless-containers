@@ -8,8 +8,8 @@ resource "aws_ecs_task_definition" "wp_task" {
   memory                   = 2048
   requires_compatibilities = ["FARGATE"]
 
-  execution_role_arn = "arn:aws:iam::648826012845:role/terraform-wordpress-fargate"
-  task_role_arn      = "arn:aws:iam::648826012845:role/terraform-wordpress-fargate"
+  execution_role_arn = "arn:aws:iam::my-aws-id:role/terraform-wordpress-fargate"
+  task_role_arn      = "arn:aws:iam::my-aws-id:role/terraform-wordpress-fargate"
 
   container_definitions = jsonencode([
     {
